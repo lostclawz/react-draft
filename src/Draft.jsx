@@ -1,16 +1,17 @@
-import React, {PureComponent} from 'react';
-import {isEqual} from 'lodash';
+import React, { PureComponent } from 'react';
+import update from 'immutability-helper';
+import { isEqual } from 'lodash';
 import PropTypes from 'prop-types';
 
 
 export default
-class Draft extends PureComponent{
+   class Draft extends PureComponent {
 
    static propTypes = {
       children: PropTypes.func
    }
 
-   constructor(props){
+   constructor(props) {
       super(props);
       this.state = {};
    }
@@ -18,7 +19,7 @@ class Draft extends PureComponent{
    /**
     * gets a value by key
     */
-   get = key => 
+   get = key =>
       this.state[key] === undefined
          ? this.props.original[key]
          : this.state[key]
@@ -26,11 +27,22 @@ class Draft extends PureComponent{
    /**
     * sets value by key and value
     */
-   set = (key, value) => 
-      this.setState({
-         [key]: value
-      })
-   
+   set = (key, value) =>
+      this.setState(
+         typeof key === 'object'
+            ? key
+            : { [key]: value }
+      )
+
+   /**
+    * Use immutability helper's update
+    * syntax to update the state
+    */
+   update = updateObj =>
+      this.setState(
+         update(this.state, updateObj)
+      )
+
    /**
     * returns an object representing
     * current state, with edits
@@ -50,7 +62,7 @@ class Draft extends PureComponent{
          this.getState()
       ) ? false : true
 
-   render(){
+   render() {
       let {
          children
       } = this.props;
@@ -59,6 +71,7 @@ class Draft extends PureComponent{
          ? children({
             get: this.get,
             set: this.set,
+            update: this.update,
             check: this.check,
             state: this.getState()
          })

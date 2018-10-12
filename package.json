@@ -37,6 +37,8 @@
     "prop-types": "^15.6.2"
   },
   "dependencies": {
+    "immutability-helper": "^2.8.1",
+    "lodash": "^4.17.11",
     "react": "^16.5.2",
     "react-dom": "^16.5.2"
   },
