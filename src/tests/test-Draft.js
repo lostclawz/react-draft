@@ -1,8 +1,7 @@
 import React from 'react';
-import {mount, shallow} from 'enzyme';
+import {mount} from 'enzyme';
 import {expect} from 'chai';
 import Draft from '../Draft';
-
 
 
 const Tester = ({onChange, ...props}) =>
@@ -22,7 +21,6 @@ const Tester = ({onChange, ...props}) =>
 describe('<Draft/>', () => {
 	
 	let wrapper;
-   let onClick, onChange;
    
 	const testData = {
       idNum: 1,
@@ -32,21 +30,25 @@ describe('<Draft/>', () => {
    };
 
 	beforeEach(() => {
-		// onClick = sinon.spy();
-		// onChange = sinon.spy();
 		wrapper = mount(
 			<Draft
             original={testData}
          >{({
-            get, set, state, check
+            get,
+            set,
+            state,
+            check,
+            update
          }) => 
             <Tester
                onChange={set}
                checkIfEdited={check}
+               getProp={get}
+               updateState={update}
                {...state}
             />
          }</Draft>
-		);
+      );
    })
    
    it(`initially passes original prop to children as state prop`, () => {
@@ -74,9 +76,42 @@ describe('<Draft/>', () => {
             ).to.equal(newValue)
          }
       })
+      it(`accepts an object instead of string as first argument, updating like setState`, () => {
+         const multiChange = {
+            company: "Another",
+            phone: "666-6666"
+         };
+         const merged = {
+            ...testData,
+            ...multiChange
+         }
+
+         wrapper.find(Tester).props().onChange(multiChange);
+         for (let k in merged){
+            let val = merged[k];
+            expect(
+               wrapper.find(Tester).props().getProp(k)
+            ).to.equal(val);
+         }
+      })
    })
 
+   describe(`props.get(key)`, () => {
+      it(`returns the correct value from state`, () => {
+         expect(
+            wrapper.find(Tester).props().getProp('name')
+         ).to.equal(testData.name);
+      })
+   })
 
+   describe(`props.update($updateObj)`, () => {
+      it(`accepts an immutability helper update object to alter state`, () => {
+         wrapper.find(Tester).props().updateState({'name': {$set: "Test"}});
+         expect(
+            wrapper.find(Tester).props().getProp('name')
+         ).to.equal("Test");
+      })
+   })
 
    describe(`props.check()`, () => {
       it(`returns false if no edits have been made`, () => {
