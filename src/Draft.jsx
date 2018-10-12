@@ -55,7 +55,7 @@ class Draft extends PureComponent{
          children
       } = this.props;
 
-      return typeof children === 'function
+      return typeof children === 'function'
          ? children({
             get: this.get,
             set: this.set,
