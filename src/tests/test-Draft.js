@@ -1,10 +1,18 @@
 import React from 'react';
 import {mount} from 'enzyme';
 import {expect} from 'chai';
-import Draft from '../Draft';
+import Draft, {compareValues} from '../Draft';
 
 
-const Tester = ({onChange, ...props}) =>
+const Tester = ({
+   onChange,
+   checkIfEdited,
+   getProp,
+   updateState,
+   changed,
+   state,
+   ...props
+}) =>
    Object.keys(props)
    .map(k =>
       k ? <input
@@ -38,13 +46,16 @@ describe('<Draft/>', () => {
             set,
             state,
             check,
-            update
+            update,
+            changed
          }) => 
             <Tester
                onChange={set}
                checkIfEdited={check}
                getProp={get}
                updateState={update}
+               state={state}
+               changed={changed}
                {...state}
             />
          }</Draft>
@@ -57,6 +68,41 @@ describe('<Draft/>', () => {
          expect(TesterEl.props()[k])
             .to.equal(testData[k])
       }
+   })
+
+   describe(`compareValues(a, b, false)`, () => {
+      const compareTests = [
+         {a: undefined, b: '', expected: true},
+         {a: '', b: undefined, expected: true},
+         {a: '', b: '', expected: true},
+         {a: NaN, b: NaN, expected: true},
+         {a: 1, b: "1", expected: true},
+         {a: false, b: "false", expected: true},
+         {a: true, b: "true", expected: true},
+         {a: NaN, b: undefined, expected: false}
+      ];
+      compareTests.forEach(({a, b, expected}) =>
+         it(`returns ${expected} for "${a}" == "${b}"`, () => {
+            expect(compareValues(a, b, false)).to.equal(expected);
+         })
+      )
+   })
+   describe(`compareValues(a, b, true)`, () => {
+      const compareTests = [
+         {a: undefined, b: '', expected: false},
+         {a: '', b: undefined, expected: false},
+         {a: '', b: '', expected: true},
+         {a: NaN, b: NaN, expected: false},
+         {a: 1, b: "1", expected: false},
+         {a: false, b: "false", expected: false},
+         {a: true, b: "true", expected: false},
+         {a: NaN, b: undefined, expected: false}
+      ];
+      compareTests.forEach(({a, b, expected}) =>
+         it(`returns ${expected} for "${a}" == "${b}"`, () => {
+            expect(compareValues(a, b, true)).to.equal(expected);
+         })
+      )
    })
 
    describe(`props.set(key, value)`, () => {
@@ -85,7 +131,6 @@ describe('<Draft/>', () => {
             ...testData,
             ...multiChange
          }
-
          wrapper.find(Tester).props().onChange(multiChange);
          for (let k in merged){
             let val = merged[k];
@@ -142,6 +187,73 @@ describe('<Draft/>', () => {
          expect(
             wrapper.find(Tester).props().checkIfEdited()
          ).to.equal(false);
+      })
+   })
+
+   describe(`props.changed`, () => {
+      it(`is an object`, () => {
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.an('object');
+      })
+      it(`is initially empty`, () => {
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.empty;
+      })
+      it(`after a change is made, contains an object with original and edited value`, () => {
+         let changedName = "Johnny Doe";
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.empty;
+         wrapper.find('.name').simulate('change', {
+            target: {value: changedName}
+         });
+         expect(
+            wrapper.find('.name').prop('value')
+         ).to.equal(changedName);
+         expect(
+            wrapper.find(Tester).prop('name')
+         ).to.equal(changedName);
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.have.key('name');
+         let changed = wrapper.find(Tester).prop('changed');
+         expect(changed).to.have.key('name');
+         expect(changed.name).to.be.an('object');
+         expect(changed.name.original).to.equal(testData.name);
+         expect(changed.name.edited).to.equal(changedName);
+      })
+      it(`doesn't include property name if the change equals original`, () => {
+         let changedName = "Johnny Doe";
+         let changeBack = testData.name;
+
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.empty;
+         // change to something different
+         wrapper.find('.name').simulate('change', {
+            target: {value: changedName}
+         });
+         expect(
+            wrapper.find('.name').prop('value')
+         ).to.equal(changedName);
+         
+         let changed = wrapper.find(Tester).prop('changed');
+         expect(changed).to.be.not.empty;
+         expect(changed).to.have.key('name');
+         // back to original value
+         wrapper.find('.name').simulate('change', {
+            target: {value: changeBack}
+         });
+         expect(
+            wrapper.find('.name').prop('value')
+         ).to.equal(changeBack);
+         expect(
+            wrapper.find(Tester).prop('changed'),
+            "still includes edit when change is equal to original"
+         ).to.be.empty;
+         
       })
    })
 	
