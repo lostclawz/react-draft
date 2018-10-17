@@ -70,9 +70,10 @@ describe('<Draft/>', () => {
       }
    })
 
-   describe(`compareValues(a, b, false)`, () => {
+   describe(`compareValues(original, edited, false)`, () => {
       const compareTests = [
          {a: undefined, b: '', expected: true},
+         {a: undefined, b: false, expected: true},
          {a: '', b: undefined, expected: true},
          {a: '', b: '', expected: true},
          {a: NaN, b: NaN, expected: true},
@@ -87,7 +88,7 @@ describe('<Draft/>', () => {
          })
       )
    })
-   describe(`compareValues(a, b, true)`, () => {
+   describe(`compareValues(original, edited, true)`, () => {
       const compareTests = [
          {a: undefined, b: '', expected: false},
          {a: '', b: undefined, expected: false},

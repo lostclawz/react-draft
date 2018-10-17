@@ -17,8 +17,23 @@ const stringify = it => {
    return `${it}`;
 }
 
-const compareValues = (a, b, strict=false) =>
-   strict ? a === b : stringify(a) === stringify(b)
+const compareValues = (original, edited, strict = false) => {
+   if (strict) {
+      return original === edited;
+   }
+   else {
+      if (original == undefined) {
+         // special case where a isn't set (therefore false)
+         // and b is false (entered by user)
+         if (typeof edited === 'boolean' || typeof edited === 'string') {
+            if (edited.toString() == 'false') {
+               return true;
+            }
+         }
+      }
+      return stringify(original) === stringify(edited);
+   }
+}
 
 const DraftContext = React.createContext('draft-context')
 const DraftConsumer = DraftContext.Consumer;
