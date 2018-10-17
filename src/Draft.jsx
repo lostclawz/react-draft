@@ -4,7 +4,7 @@ import isEqualWith from 'lodash/isEqualWith';
 import PropTypes from 'prop-types';
 
 
-export function stringify(it){
+const stringify = it => {
    // objects and arrays = JSON
    if (typeof it === 'object'){
       return JSON.stringify(it);
@@ -17,16 +17,18 @@ export function stringify(it){
    return `${it}`;
 }
 
-export function compareValues(a, b, strict=false){
-   return strict
-      ? a === b
-      : stringify(a) === stringify(b);
-}
+const compareValues = (a, b, strict=false) =>
+   strict ? a === b : stringify(a) === stringify(b)
 
-export let DraftContext = React.createContext('draft-context')
-export let DraftConsumer = DraftContext.Consumer;
+const DraftContext = React.createContext('draft-context')
+const DraftConsumer = DraftContext.Consumer;
 
-export default class Draft extends PureComponent{
+
+class Draft extends PureComponent{
+   static propTypes = {
+      original: PropTypes.object,
+      children: PropTypes.func
+   }
    render(){
       let {
          original,
@@ -43,7 +45,12 @@ export default class Draft extends PureComponent{
    }
 }
 
-export class DraftProvider extends PureComponent{
+class DraftProvider extends PureComponent{
+   
+   static propTypes = {
+      stringifyCompare: PropTypes.bool
+   }
+
    static defaultProps = {
       stringifyCompare: true
    }
@@ -80,23 +87,9 @@ export class DraftProvider extends PureComponent{
          update(this.state, updateObj)
       )
    
-   stringify = it => {
-      // objects and arrays
-      if (typeof it === 'object'){
-         return JSON.stringify(it);
-      }
-      if (typeof it === 'undefined'){
-         return '';
-      }
-      // NaN, null, etc...
-      return `${it}`;
-   }
-   
    compare = (a, b) => {
       let {stringifyCompare} = this.props;
-      return stringifyCompare
-         ? this.stringify(a) === this.stringify(b)
-         : a == b;
+      return compareValues(a, b, !stringifyCompare)
    }
    
    /**
@@ -180,3 +173,12 @@ export class DraftProvider extends PureComponent{
    }
 }
 
+export {
+   DraftProvider,
+   DraftContext,
+   DraftConsumer,
+   Draft,
+   stringify,
+   compareValues
+}
+export default Draft;
