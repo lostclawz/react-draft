@@ -8,6 +8,7 @@ const Tester = ({
    onChange,
    checkIfEdited,
    getProp,
+   clear,
    updateState,
    changed,
    state,
@@ -47,6 +48,7 @@ describe('<Draft/>', () => {
             state,
             check,
             update,
+            clear,
             changed
          }) => 
             <Tester
@@ -56,6 +58,7 @@ describe('<Draft/>', () => {
                updateState={update}
                state={state}
                changed={changed}
+               onClear={clear}
                {...state}
             />
          }</Draft>
@@ -79,6 +82,8 @@ describe('<Draft/>', () => {
          {a: NaN, b: NaN, expected: true},
          {a: 1, b: "1", expected: true},
          {a: false, b: "false", expected: true},
+         {a: false, b: "true", expected: false},
+         {a: "true", b: true, expected: true},
          {a: true, b: "true", expected: true},
          {a: NaN, b: undefined, expected: false}
       ];
@@ -87,6 +92,10 @@ describe('<Draft/>', () => {
             expect(compareValues(a, b, false)).to.equal(expected);
          })
       )
+      it(`returns false if original value is undefined and edited value isn't undefined`, () => {
+         expect(compareValues(undefined, "test")).to.equal(false);
+         expect(compareValues(undefined, undefined)).to.equal(true);
+      })
    })
    describe(`compareValues(original, edited, true)`, () => {
       const compareTests = [
@@ -142,11 +151,67 @@ describe('<Draft/>', () => {
       })
    })
 
-   describe(`props.get(key)`, () => {
+   describe(`props.clear()`, () => {
+      it(`removes any changes made since mount`, () => {
+         expect(
+            wrapper.find(Tester).prop('checkIfEdited')()
+         ).to.be.false;
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.empty;
+         // make a bunch of changes
+         for (let k in testData){
+            wrapper
+               .find(`.${k}`)
+               .simulate('change', {
+                  target: {value: "blah"}
+               })
+         }
+         expect(
+            wrapper.find(Tester).prop('checkIfEdited')()
+         ).to.be.true;
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.not.be.empty;
+
+         expect(
+            wrapper.find(Tester).prop('onClear')
+         ).to.be.a('function');
+         wrapper.find(Tester).prop('onClear')();
+         // expect(wrapper.find(Tester).prop('onClear')).to.not.throw();
+
+         // expect(typeof upd).to.equal('object');
+         // expect(upd).to.have.keys('company', 'idNum', 'name', 'phone');
+         // expect(testData).to.deep.equal(
+         //    wrapper.find(Tester).prop('state')
+         // )
+
+         expect(
+            wrapper.find(Tester).prop('checkIfEdited')()
+         ).to.be.false;
+         expect(testData).to.deep.equal(
+            wrapper.find(Tester).prop('state')
+         )
+         expect(
+            wrapper.find(Tester).prop('changed')
+         ).to.be.empty;
+      })
+   })
+
+   describe(`props.get(key, defaultValue)`, () => {
       it(`returns the correct value from state`, () => {
          expect(
             wrapper.find(Tester).props().getProp('name')
          ).to.equal(testData.name);
+      })
+      it(`returns defaultValue if provided and value doesn't exist in state or original`, () => {
+         expect(
+            wrapper.find(Tester).prop('getProp')('whatever', 'exists')
+         ).to.equal('exists');
+         wrapper.find(Tester).prop('onChange')('whatever', 'true');
+         expect(
+            wrapper.find(Tester).prop('getProp')('whatever', 'exists')
+         ).to.equal('true');
       })
    })
 

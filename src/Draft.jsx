@@ -1,4 +1,7 @@
-import React, {PureComponent} from 'react';
+import React, {
+   PureComponent,
+   createContext
+} from 'react';
 import update from 'immutability-helper';
 import isEqualWith from 'lodash/isEqualWith';
 import PropTypes from 'prop-types';
@@ -17,25 +20,26 @@ const stringify = it => {
    return `${it}`;
 }
 
-const compareValues = (original, edited, strict = false) => {
-   if (strict) {
-      return original === edited;
+const compareValues = (a, b, strict=false) => {
+   if (strict){
+      return a === b;
    }
-   else {
-      if (original == undefined) {
+   else{
+      if (a == undefined){
          // special case where a isn't set (therefore false)
          // and b is false (entered by user)
-         if (typeof edited === 'boolean' || typeof edited === 'string') {
-            if (edited.toString() == 'false') {
+         if (typeof b === 'boolean' || typeof b === 'string'){
+            if (b.toString() == 'false'){
                return true;
             }
          }
       }
-      return stringify(original) === stringify(edited);
+      return stringify(a) === stringify(b);
    }
 }
 
-const DraftContext = React.createContext('draft-context')
+const DraftContext = createContext('draft-context')
+
 const DraftConsumer = DraftContext.Consumer;
 
 
@@ -60,6 +64,16 @@ class Draft extends PureComponent{
    }
 }
 
+const DraftDecorator = adapter => WrappedComponent => props => 
+   <DraftConsumer>{ draftProps => 
+      <WrappedComponent
+         {...adapter(draftProps)}
+         {...props}
+      />
+   }</DraftConsumer>
+
+      
+
 class DraftProvider extends PureComponent{
    
    static propTypes = {
@@ -78,10 +92,20 @@ class DraftProvider extends PureComponent{
    /**
     * gets a value by key
     */
-   get = key => 
-      this.state[key] === undefined
-         ? this.props.original[key]
-         : this.state[key]
+   get = (key, defaultValue) => {
+      let {original} = this.props;
+      if (this.state[key] === undefined){
+         if (original[key] !== undefined){
+            return original[key];
+         }
+         else{
+            if (defaultValue !== undefined){
+               return defaultValue;
+            }
+         }
+      }
+      return this.state[key];
+   }
 
    /**
     * sets value by key and value
@@ -102,7 +126,7 @@ class DraftProvider extends PureComponent{
          update(this.state, updateObj)
       )
    
-   compare = (a, b) => {
+   equalValues = (a, b) => {
       let {stringifyCompare} = this.props;
       return compareValues(a, b, !stringifyCompare)
    }
@@ -117,7 +141,7 @@ class DraftProvider extends PureComponent{
       let keysChanged = {};
       for (let k in this.state){
          if (this.state[k] !== undefined){
-            if (!this.compare(original[k], this.state[k])){
+            if (!this.equalValues(original[k], this.state[k])){
                keysChanged[k] = {
                   original: original[k],
                   edited: this.state[k]
@@ -136,11 +160,13 @@ class DraftProvider extends PureComponent{
     * clear changes from state
     */
    clear = () => {
+      throw new Error("test");
       let update = {};
       for (let k in this.state){
          update[k] = undefined;
       }
       this.setState(update);
+      return update;
    }
 
    /**
@@ -151,7 +177,7 @@ class DraftProvider extends PureComponent{
       isEqualWith(
          this.props.original,
          this.getState().state,
-         this.compare
+         this.equalValues
       ) ? false : true
 
    render(){
@@ -194,6 +220,7 @@ export {
    DraftConsumer,
    Draft,
    stringify,
-   compareValues
+   compareValues,
+   DraftDecorator
 }
 export default Draft;
