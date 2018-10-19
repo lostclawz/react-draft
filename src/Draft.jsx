@@ -160,7 +160,6 @@ class DraftProvider extends PureComponent{
     * clear changes from state
     */
    clear = () => {
-      throw new Error("test");
       let update = {};
       for (let k in this.state){
          update[k] = undefined;

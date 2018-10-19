@@ -152,49 +152,35 @@ describe('<Draft/>', () => {
    })
 
    describe(`props.clear()`, () => {
-      it(`removes any changes made since mount`, () => {
-         expect(
-            wrapper.find(Tester).prop('checkIfEdited')()
-         ).to.be.false;
-         expect(
-            wrapper.find(Tester).prop('changed')
-         ).to.be.empty;
-         // make a bunch of changes
-         for (let k in testData){
-            wrapper
-               .find(`.${k}`)
-               .simulate('change', {
-                  target: {value: "blah"}
-               })
-         }
-         expect(
-            wrapper.find(Tester).prop('checkIfEdited')()
-         ).to.be.true;
-         expect(
-            wrapper.find(Tester).prop('changed')
-         ).to.not.be.empty;
-
-         expect(
-            wrapper.find(Tester).prop('onClear')
-         ).to.be.a('function');
-         wrapper.find(Tester).prop('onClear')();
-         // expect(wrapper.find(Tester).prop('onClear')).to.not.throw();
-
-         // expect(typeof upd).to.equal('object');
-         // expect(upd).to.have.keys('company', 'idNum', 'name', 'phone');
-         // expect(testData).to.deep.equal(
-         //    wrapper.find(Tester).prop('state')
-         // )
-
-         expect(
-            wrapper.find(Tester).prop('checkIfEdited')()
-         ).to.be.false;
-         expect(testData).to.deep.equal(
-            wrapper.find(Tester).prop('state')
-         )
-         expect(
-            wrapper.find(Tester).prop('changed')
-         ).to.be.empty;
+      let funcs;
+      before(() => {
+         wrapper = mount(
+            <Draft original={testData}>{
+               props => {
+                  funcs = props;
+                  return null;
+               }
+            }</Draft>
+         );
+      })
+      it(`passes a clear() function to children`, () => {
+         expect(funcs.clear).to.be.a('function');
+      })
+      it(`removes any edits made`, () => {
+         expect(funcs.state).to.deep.equal(testData);
+         funcs.set('name', 'Test');
+         expect(funcs.state.name).to.equal('Test');
+         funcs.clear();
+         expect(funcs.state.name).to.equal(testData.name);
+         expect(funcs.changed).to.be.empty;
+      })
+      it(`after being called check() returns false`, () => {
+         expect(funcs.state).to.deep.equal(testData);
+         funcs.set('name', 'Test');
+         expect(funcs.check()).to.be.true;
+         expect(funcs.state.name).to.equal('Test');
+         funcs.clear();
+         expect(funcs.check()).to.be.false;
       })
    })
 
