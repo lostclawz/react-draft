@@ -46,7 +46,7 @@ const DraftConsumer = DraftContext.Consumer;
 class Draft extends PureComponent{
    static propTypes = {
       original: PropTypes.object,
-      children: PropTypes.func
+      children: PropTypes.func.isRequired
    }
    render(){
       let {
