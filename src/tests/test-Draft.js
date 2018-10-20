@@ -1,8 +1,18 @@
-import React from 'react';
-import {mount} from 'enzyme';
+import React, {Component} from 'react';
+import {mount, shallow} from 'enzyme';
 import {expect} from 'chai';
-import Draft, {compareValues} from '../Draft';
+import Draft, {
+   compareValues,
+   DraftDecorator
+} from '../Draft';
 
+   
+const testData = {
+   idNum: 1,
+   name: "John Doe",
+   company: "Place",
+   phone: "777-7777"
+};
 
 const Tester = ({
    onChange,
@@ -27,16 +37,39 @@ const Tester = ({
    )
 
 
+// @DraftDecorator(testData)
+class DecoratorTest extends Component{
+   render(){
+      return (
+         <p className="child-element"/>
+      )
+   }
+}
+const DecTest = DraftDecorator(testData)(DecoratorTest);
+
+describe ('@DraftDecorator', () => {
+   it(`renders child component`, () => {
+      let wrapper = mount(
+         <DecTest/>
+      )
+      expect(wrapper.find('p.child-element')).to.exist;
+   })
+   it(`accepts an adapter argument (function)`)
+   it(`passes the adapter function the set of functions to map to props`, () => {
+      let wrapper = mount(
+         <DecTest test={true}/>
+      )
+      expect(wrapper.find(DecoratorTest)).to.have.lengthOf(1);
+      expect(wrapper.find(DecoratorTest).props()).to.be.not.empty;
+      expect(wrapper.find(DecoratorTest).prop('set')).to.be.a('function');
+      expect(wrapper.prop('test')).to.be.true;
+   });
+})
+
 describe('<Draft/>', () => {
 	
 	let wrapper;
-   
-	const testData = {
-      idNum: 1,
-      name: "John Doe",
-      company: "Place",
-      phone: "777-7777"
-   };
+
 
 	beforeEach(() => {
 		wrapper = mount(
