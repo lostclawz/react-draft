@@ -64,13 +64,25 @@ class Draft extends PureComponent{
    }
 }
 
-const DraftDecorator = adapter => WrappedComponent => props => 
-   <DraftConsumer>{ draftProps => 
-      <WrappedComponent
-         {...adapter(draftProps)}
-         {...props}
-      />
-   }</DraftConsumer>
+const DraftDecorator = (original) => WrappedComponent => {
+   class DraftDecoratorInner extends PureComponent{
+      render(){
+         return (
+            <DraftProvider original={original}>
+               <DraftConsumer>{ draftProps => 
+                  <WrappedComponent
+                     {...draftProps}
+                     {...this.props}
+                  />
+               }</DraftConsumer>
+            </DraftProvider>
+         );
+      }
+   }
+   return DraftDecoratorInner;
+}
+
+   
 
       
 
