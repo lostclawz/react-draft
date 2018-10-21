@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {mount, shallow} from 'enzyme';
 import {expect} from 'chai';
+import sinon from 'sinon';
 import Draft, {
    compareValues,
    DraftDecorator
@@ -20,6 +21,7 @@ const Tester = ({
    getProp,
    clear,
    updateState,
+   set,
    changed,
    state,
    ...props
@@ -31,45 +33,20 @@ const Tester = ({
          value={props[k].toString()}
          className={k}
          onChange={e =>
-            onChange(k, e.target.value)
+            onChange
+            ? onChange(k, e.target.value)
+            : set(k, e.target.value)
          }
       /> : null
    )
 
 
-// @DraftDecorator(testData)
-class DecoratorTest extends Component{
-   render(){
-      return (
-         <p className="child-element"/>
-      )
-   }
-}
-const DecTest = DraftDecorator(testData)(DecoratorTest);
 
-describe ('@DraftDecorator', () => {
-   it(`renders child component`, () => {
-      let wrapper = mount(
-         <DecTest/>
-      )
-      expect(wrapper.find('p.child-element')).to.exist;
-   })
-   it(`accepts an adapter argument (function)`)
-   it(`passes the adapter function the set of functions to map to props`, () => {
-      let wrapper = mount(
-         <DecTest test={true}/>
-      )
-      expect(wrapper.find(DecoratorTest)).to.have.lengthOf(1);
-      expect(wrapper.find(DecoratorTest).props()).to.be.not.empty;
-      expect(wrapper.find(DecoratorTest).prop('set')).to.be.a('function');
-      expect(wrapper.prop('test')).to.be.true;
-   });
-})
 
-describe('<Draft/>', () => {
-	
+
+
+describe('<Draft/>', () => {	
 	let wrapper;
-
 
 	beforeEach(() => {
 		wrapper = mount(
@@ -92,6 +69,7 @@ describe('<Draft/>', () => {
                state={state}
                changed={changed}
                onClear={clear}
+               set={set}
                {...state}
             />
          }</Draft>
@@ -342,4 +320,93 @@ describe('<Draft/>', () => {
       })
    })
 	
+})
+
+
+describe ('@DraftDecorator', () => {
+   
+   class DecoratorTest extends Component{
+      render(){
+         return (
+            <p className="child-element"/>
+         )
+      }
+   }
+
+   let DecTest, wrapper, Decorated;
+
+   beforeEach(function(){
+      DecTest = DraftDecorator(function originalFromProps(props){
+         return {
+            ...props.original
+         };  
+      })(Tester);
+      wrapper = mount(
+         <DecTest original={testData}/>
+      )
+      Decorated = wrapper.find(Tester);
+   })
+
+   it(`renders child component`, () => {
+      let wrapper = mount(
+         <DecTest original={testData}/>
+      )
+      expect(wrapper.find('p.child-element')).to.exist;
+   })
+   it(`accepts an originalFromProps function which receives props object`, () => {
+      let oFP = sinon.fake.returns(testData);
+      expect(oFP.callCount).to.equal(0);
+      DecTest = DraftDecorator(oFP)(DecoratorTest);
+      let myProps = {original: testData};
+      wrapper = mount(
+         <DecTest {...myProps}/>
+      )
+      expect(oFP.callCount).to.equal(1);
+      // expect(oFP.calledOnce).to.be.true;
+      expect(oFP.calledWith(myProps)).to.be.true;
+   })
+   it(`throws an error if originalFromProps is a function but doesn't return an object`, () => {
+      DecTest = DraftDecorator(function(props){
+         return null;
+      })(DecoratorTest);
+      expect(() => {
+         wrapper = mount(
+            <DecTest original={testData}/>
+         )
+      })
+   })
+   it(`if originalFromProps function is undefined, decorator automatically assumes original prop`, () => {
+      DecTest = DraftDecorator()(DecoratorTest);
+      let myProps = {original: testData};
+      wrapper = mount(
+         <DecTest {...myProps}/>
+      )
+      expect(wrapper.find(DecoratorTest).prop('original')).to.deep.equal(testData);
+   })
+   it(`throws an error if originalFromProps is undefined, and props.original isn't an object`, () => {
+      DecTest = DraftDecorator()(DecoratorTest);
+      expect(() => mount(<DecTest/>)).to.throw();
+      
+   })
+   let expectedFunctions = [
+      "get",
+      "set",
+      "clear",
+      "check",
+      "update"
+   ];
+   expectedFunctions.forEach(fn =>
+      it(`passes the child component '${fn}' function`, () => {
+         expect(Decorated.prop(fn)).to.be.a('function');
+      })
+   )
+   it(`passes child component the state object, originally equal to original.props`, () => {
+      expect(Decorated.prop('original')).to.deep.equal(testData);
+   })
+   it(`passes child component the changed object, initially empty`, () => {
+      expect(Decorated.prop('changed')).to.be.an('object');
+      expect(Decorated.prop('changed')).to.be.empty;
+   })
+   it(`set function creates a change in state`);
+   
 })
