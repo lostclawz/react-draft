@@ -64,11 +64,30 @@ class Draft extends PureComponent{
    }
 }
 
-const DraftDecorator = (original) => WrappedComponent => {
+const DraftDecorator = (originalFromProps) => WrappedComponent => {
    class DraftDecoratorInner extends PureComponent{
+      constructor(props){
+         super(props);
+         let original;
+         if (typeof originalFromProps === 'function'){
+            original = originalFromProps(props);
+            if (typeof original !== 'object'){
+               throw new Error("originalFromProps function did not return an initial original object");
+            }
+         }
+         else{
+            original = props.original;
+         }
+         if (typeof original !== 'object'){
+            throw new Error('Draft cannot locate original object, original is ' + typeof originalFromProps);
+         }
+         else{
+            this.state = {...original}
+         }
+      }
       render(){
          return (
-            <DraftProvider original={original}>
+            <DraftProvider original={this.state}>
                <DraftConsumer>{ draftProps => 
                   <WrappedComponent
                      {...draftProps}
