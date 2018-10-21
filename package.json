@@ -4,7 +4,7 @@
   "description": "a draft state management facc component for react",
   "main": "src/Draft.jsx",
   "scripts": {
-    "test": "npx mocha --watch --reporter nyan --require ./src/tests/mocha-setup.js ./src/**/test-*.js"
+    "test": "npx mocha --watch --require ./src/tests/mocha-setup.js ./src/**/test-*.js"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,8 @@
     "jsdom": "^12.2.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.2.0",
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.6.2",
+    "sinon": "^7.0.0"
   },
   "dependencies": {
     "immutability-helper": "^2.8.1",
@@ -53,8 +54,10 @@
       "@babel/plugin-transform-destructuring",
       "@babel/plugin-proposal-class-properties",
       [
-         "@babel/plugin-proposal-decorators",
-         {"legacy": true}
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
       ]
     ]
   }
