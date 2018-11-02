@@ -1,5 +1,5 @@
 {
-  "name": "draft-hoc",
+  "name": "react-draft",
   "version": "1.3.0",
   "description": "a draft state management facc component for react",
   "main": "src/Draft.jsx",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lostclawz/draft-hoc.git"
+    "url": "git+https://github.com/lostclawz/react-draft.git"
   },
   "keywords": [
     "react",
@@ -18,9 +18,9 @@
   "author": "Philip Kuperberg",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lostclawz/draft-hoc/issues"
+    "url": "https://github.com/lostclawz/react-draft/issues"
   },
-  "homepage": "https://github.com/lostclawz/draft-hoc#readme",
+  "homepage": "https://github.com/lostclawz/react-draft#readme",
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
