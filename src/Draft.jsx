@@ -5,6 +5,7 @@ import React, {
 import update from 'immutability-helper';
 import isEqualWith from 'lodash/isEqualWith';
 import PropTypes from 'prop-types';
+import { timingSafeEqual } from 'crypto';
 
 
 const stringify = it => {
@@ -118,6 +119,7 @@ class DraftProvider extends PureComponent{
    constructor(props){
       super(props);
       this.state = {};
+      this.bindings = {};
    }
 
    /**
@@ -147,6 +149,18 @@ class DraftProvider extends PureComponent{
          ? key
          : {[key]: value}
       )
+
+
+   onChange = key =>
+      typeof this.bindings[key] === 'function'
+         ? this.bindings[key](key)
+         : this.bindings[key] = (v) =>
+            this.set(
+               key,
+               v.target && v.target.value
+                  ? v.target.value
+                  : v
+            )
 
    /**
     * Use immutability helper's update
@@ -221,6 +235,7 @@ class DraftProvider extends PureComponent{
          clear,
          check,
          getState,
+         onChange
       } = this;
       let {
          changed,
@@ -236,7 +251,8 @@ class DraftProvider extends PureComponent{
                clear,
                check,
                state,
-               changed
+               changed,
+               onChange
             }}
             children={children}
          />
