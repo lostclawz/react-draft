@@ -1,4 +1,4 @@
-# draft-hoc
+# react-draft
 a react higher order component to manage a component's draft state
 
 ## Setup
@@ -11,7 +11,7 @@ a react higher order component to manage a component's draft state
 Draft accepts one property, `original`: a single object which is the original state of your data.
 Draft then works as a [render prop](https://reactjs.org/docs/render-props.html) component, meaning it must have a single function as a child. This function is passed one argument, an object containing a set of functions used to manage your draft data state. For example:
 
-      import Draft from './draft-hoc/src/Draft'`;
+      import Draft from './react-draft/src/Draft'`;
 
       export const Wrapper = props =>
          <div className="page">
@@ -27,7 +27,7 @@ Draft then works as a [render prop](https://reactjs.org/docs/render-props.html) 
                }) => (
                   <FormEditor
                      state={state}
-                     onChange={set}
+                     onChange={onChange}
                      checkForChanges={check}
                   />
                )
@@ -43,6 +43,16 @@ The object passed as an argument includes:
 retrieves the value of a property by name. Using `get` returns the same value as its corresponding key in the state: `get('name') === state.name`. `get` can also except a second argument for a default value, if none exists.
 ### `set(prop, value)` or `set(object)`
 update the value of prop. Set can also be passed an object, like `this.setState`.
+### `onChange(key)(value)`
+a convenience function to curry the key of the object:
+
+      <input
+         value={state.value}
+         onChange={
+            this.props.onChange('firstName')
+         }
+      />`
+
 ### `state`
 The current state of your data, which is your initial original object merged with any changes you've made.
 ### `check()`
