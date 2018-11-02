@@ -151,16 +151,13 @@ class DraftProvider extends PureComponent{
       )
 
 
-   onChange = key =>
-      typeof this.bindings[key] === 'function'
-         ? this.bindings[key](key)
-         : this.bindings[key] = (v) =>
-            this.set(
-               key,
-               v.target && v.target.value
-                  ? v.target.value
-                  : v
-            )
+   onChange = key => val =>
+      this.set(
+         key, 
+         val.target && val.target.value
+            ? val.target.value
+            : val
+      )
 
    /**
     * Use immutability helper's update

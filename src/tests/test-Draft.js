@@ -278,9 +278,6 @@ describe('<Draft/>', function DraftTest() {
                   onChange={onChange(k)}
                /> : null
             )
-
-            
-
          let TEST_DATA = {test: 'value'};
          let wrapper = mount(
             <Draft original={TEST_DATA}>{
@@ -292,19 +289,15 @@ describe('<Draft/>', function DraftTest() {
                   />
             }</Draft>
          )
-
          expect(wrapper.find('.test').prop('value')).to.equal('value');
-         
-         
+         expect(wrapper.find('.test')).to.have.lengthOf(1);
          wrapper.find('.test').simulate('change', {
             target: {value: "new value"}
          })
-         expect(wrapper.find(NewTester).prop('state').test).to.equal('new value');
-         // expect(wrapper.find(NewTester).prop('test')).to.equal('new value');
-         // expect(wrapper).to.be.a('function')
-         // expect(wrapper).to.be.a('function')
-         // onChange('new value');
-         // expect(get('testKey')).to.equal('new value');
+         expect(wrapper.find('.test').prop('value')).to.equal('new value');
+         expect(wrapper.find(NewTester).prop('state')).to.deep.equal({
+            test: "new value"
+         })
       })
       it(`returns a function, accepting a value, used to set your state`)
       it(`can handle input values which arrive as events, e.target.value`)
