@@ -5,7 +5,6 @@ import React, {
 import update from 'immutability-helper';
 import isEqualWith from 'lodash/isEqualWith';
 import PropTypes from 'prop-types';
-import { timingSafeEqual } from 'crypto';
 
 
 const stringify = it => {
