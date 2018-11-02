@@ -45,10 +45,10 @@ const Tester = ({
 
 
 
-describe('<Draft/>', () => {	
+describe('<Draft/>', function DraftTest() {	
 	let wrapper;
 
-	beforeEach(() => {
+	beforeEach(function beforeEachDraftTest(){
 		wrapper = mount(
 			<Draft
             original={testData}
@@ -251,6 +251,64 @@ describe('<Draft/>', () => {
             wrapper.find(Tester).props().checkIfEdited()
          ).to.equal(false);
       })
+   })
+
+   describe(`props.onChange`, function onChangeTests() {
+      // this.beforeEach(functino)
+
+      // }
+      it(`initially accepts an argument for the key in your state`, function(){
+         const NewTester = ({
+            onChange,
+            checkIfEdited,
+            getProp,
+            clear,
+            updateState,
+            set,
+            changed,
+            state,
+            ...props
+         }) =>
+            Object.keys(props)
+            .map(k =>
+               k ? <input
+                  key={k}
+                  value={props[k].toString()}
+                  className={k}
+                  onChange={onChange(k)}
+               /> : null
+            )
+
+            
+
+         let TEST_DATA = {test: 'value'};
+         let wrapper = mount(
+            <Draft original={TEST_DATA}>{
+               ({onChange, state}) =>
+                  <NewTester
+                     onChange={onChange}
+                     state={state}
+                     {...state}
+                  />
+            }</Draft>
+         )
+
+         expect(wrapper.find('.test').prop('value')).to.equal('value');
+         
+         
+         wrapper.find('.test').simulate('change', {
+            target: {value: "new value"}
+         })
+         expect(wrapper.find(NewTester).prop('state').test).to.equal('new value');
+         // expect(wrapper.find(NewTester).prop('test')).to.equal('new value');
+         // expect(wrapper).to.be.a('function')
+         // expect(wrapper).to.be.a('function')
+         // onChange('new value');
+         // expect(get('testKey')).to.equal('new value');
+      })
+      it(`returns a function, accepting a value, used to set your state`)
+      it(`can handle input values which arrive as events, e.target.value`)
+      it(`can handle checkbox events`)
    })
 
    describe(`props.changed`, () => {
