@@ -22,27 +22,27 @@
   },
   "homepage": "https://github.com/lostclawz/react-draft#readme",
   "devDependencies": {
-    "@babel/core": "^7.1.2",
+    "@babel/core": "^7.1.5",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-decorators": "^7.1.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-env": "^7.1.5",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "chai": "^4.2.0",
     "enzyme": "^3.7.0",
-    "enzyme-adapter-react-16": "^1.6.0",
-    "jsdom": "^12.2.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "jsdom": "^13.0.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.2",
-    "sinon": "^7.0.0"
+    "sinon": "^7.1.1"
   },
   "dependencies": {
     "immutability-helper": "^2.8.1",
     "lodash": "^4.17.11",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2"
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1"
   },
   "babel": {
     "presets": [
