@@ -1,6 +1,6 @@
 {
   "name": "react-draft",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "a draft state management facc component for react",
   "main": "src/Draft.jsx",
   "scripts": {
