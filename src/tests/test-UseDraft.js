@@ -12,41 +12,46 @@ const testData = {
    phone: "777-7777"
 };
 
+function HookTester({data}){
+   var {
+      state,
+      set,
+      get,
+      update,
+      clear,
+      check,
+      changed
+   } = useDraft(data);
+   return  <div>
+      <form>{
+      Object.keys(state)
+      .map(k =>
+         k ? <input
+            key={k}
+            value={state[k].toString()}
+            className={k}
+            onChange={e => set(k, e.target.value)}
+         /> : null
+      )
+      }</form>
+      {check() ? (
+         <button
+            className="revert"
+            onClick={clear}
+            children="revert"
+         />
+      ) : false}
+   </div>
+}
+
 describe('useDraft', () => {
-   const stateFuncs = [
-      'get',
-      'set',
-      'state',
-      'check',
-      'update',
-      'clear',
-      'changed'
-   ];
+
    var wrapper;
-   function HookTester(){
-      var {
-         state,
-         set,
-         get,
-         update,
-         clear,
-         changed
-       } = useDraft(testData);
-      return  <div>{
-         Object.keys(state)
-         .map(k =>
-            k ? <input
-               key={k}
-               value={state[k].toString()}
-               className={k}
-               onChange={e => set(k, e.target.value)}
-            /> : null
-         )
-      }</div>
-   }
+
    beforeEach(() => {
-      wrapper = mount(<HookTester/>);
+      wrapper = mount(<HookTester data={testData}/>);
    })
+
    it(`returns a state with the initial state passed as original`, () => {
       for (let k in testData){
          expect(
@@ -54,7 +59,7 @@ describe('useDraft', () => {
          ).to.equal(testData[k].toString())
       }
    })
-   it(`correctly passes new value to child through props.state`, () => {
+   it(`correctly passes state to component`, () => {
       const newValue = "new";
 
       for (let k in testData){
@@ -68,6 +73,19 @@ describe('useDraft', () => {
             wrapper.find(`.${k}`).prop('value')
          ).to.equal(newValue)
       }
+   })
+   it(`handles check() and clear() functions`, () => {
+      // no .revert before changes
+      expect(wrapper.find('.revert')).to.have.lengthOf(0);
+      wrapper.find('.name').simulate('change', {
+         target: {value: "new name"}
+      });
+      expect(wrapper.find('.name').prop('value')).to.equal("new name");
+      // .revert button after changes
+      expect(wrapper.find('.revert')).to.have.lengthOf(1);
+      // click revert button to trigger clear()
+      wrapper.find('.revert').simulate('click')
+      expect(wrapper.find('.revert')).to.have.lengthOf(0);
    })
       
 })

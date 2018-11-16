@@ -258,7 +258,7 @@ class DraftProvider extends PureComponent{
 }
 
    
-function useDraft(original, opts={stringifyCompare: false}){
+function useDraft(original, opts={stringifyCompare: true}){
 
    const [state, setState] = useState({});
 
@@ -345,7 +345,7 @@ function useDraft(original, opts={stringifyCompare: false}){
    const check = () =>
       isEqualWith(
          original,
-         getState().state,
+         getState().nextState,
          equalValues
       ) ? false : true
 
