@@ -1,6 +1,7 @@
 import React, {
    PureComponent,
-   createContext
+   createContext,
+   useState
 } from 'react';
 import update from 'immutability-helper';
 import isEqualWith from 'lodash/isEqualWith';
@@ -256,6 +257,113 @@ class DraftProvider extends PureComponent{
    }
 }
 
+   
+function useDraft(original, opts={stringifyCompare: false}){
+
+   const [state, setState] = useState({});
+
+   /**
+    * gets a value by key
+    */
+   function get(key, defaultValue){
+      if (state[key] === undefined){
+         if (original[key] !== undefined){
+            return original[key];
+         }
+         else{
+            if (defaultValue !== undefined){
+               return defaultValue;
+            }
+         }
+      }
+      return state[key];
+   }
+
+   /**
+    * sets value by key and value
+    */
+   const set = (key, value) =>
+      setState(
+         typeof key === 'object'
+         ? key
+         : {[key]: value}
+      )
+
+
+   const onChange = key => val =>
+      set(
+         key, 
+         val.target && val.target.value
+            ? val.target.value
+            : val
+      )
+
+   /**
+    * Use immutability helper's update
+    * syntax to update the state
+    */
+   const updateState = updateObj =>
+      setState(update(state, updateObj))
+
+   const equalValues = (a, b) => {
+      return compareValues(a, b, !opts.stringifyCompare)
+   }
+
+   /**
+    * returns an object with state of data
+    * and an array of object keys that have been edited
+    */
+   const getState = () => {
+      let edits = {...original};
+      let keysChanged = {};
+      for (let k in state){
+         if (state[k] !== undefined){
+            if (!equalValues(original[k], state[k])){
+               keysChanged[k] = {
+                  original: original[k],
+                  edited: state[k]
+               };
+            }
+            edits[k] = state[k];
+         }
+      }
+      return {
+         changed: keysChanged,
+         nextState: edits
+      };  
+   }
+
+   /**
+    * clear changes from state
+    */
+   const clear = () => setState({})
+
+   /**
+    * Returns true to indicate
+    * changes have been made
+    */
+   const check = () =>
+      isEqualWith(
+         original,
+         getState().state,
+         equalValues
+      ) ? false : true
+
+   let { changed, nextState } = getState();
+
+   return {
+      get,
+      set,
+      update: updateState,
+      clear,
+      check,
+      state: nextState,
+      changed,
+      onChange
+   };
+}  
+
+
 export {
    DraftProvider,
    DraftContext,
@@ -263,6 +371,7 @@ export {
    Draft,
    stringify,
    compareValues,
-   DraftDecorator
+   DraftDecorator,
+   useDraft
 }
 export default Draft;
