@@ -34,6 +34,27 @@ Draft then works as a [render prop](https://reactjs.org/docs/render-props.html) 
             }</Draft>
          </div>
 
+Can also function as a react hook by calling the useDraft exported function.
+
+      export function HookedForm(){
+         var {
+            state,
+            set,
+            get,
+            update,
+            clear,
+            changed
+         } = useDraft(testData);   
+         return (
+            <FormEditor
+               state={state}
+               onChange={set}
+               checkForChanges={check}
+            />
+         )
+      }
+
+
 
 ## Available Argument Properties
 
