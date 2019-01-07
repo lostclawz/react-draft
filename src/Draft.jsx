@@ -163,10 +163,12 @@ class DraftProvider extends PureComponent{
     * Use immutability helper's update
     * syntax to update the state
     */
-   update = updateObj =>
+   update = updateObj => {
+      let {state} = this.getState();
       this.setState(
-         update(this.state, updateObj)
+         update(state, updateObj)
       )
+   }
    
    equalValues = (a, b) => {
       let {stringifyCompare} = this.props;
