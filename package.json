@@ -22,29 +22,29 @@
    },
    "homepage": "https://github.com/lostclawz/react-draft#readme",
    "devDependencies": {
-      "@babel/core": "^7.2.2",
-      "@babel/plugin-proposal-class-properties": "^7.3.0",
-      "@babel/plugin-proposal-decorators": "^7.3.0",
-      "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
-      "@babel/preset-env": "^7.3.1",
+      "@babel/core": "^7.4.0",
+      "@babel/plugin-proposal-class-properties": "^7.4.0",
+      "@babel/plugin-proposal-decorators": "^7.4.0",
+      "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
+      "@babel/preset-env": "^7.4.2",
       "@babel/preset-react": "^7.0.0",
-      "@babel/register": "^7.0.0",
+      "@babel/register": "^7.4.0",
       "chai": "^4.2.0",
-      "enzyme": "^3.8.0",
-      "enzyme-adapter-react-16": "^1.9.1",
-      "eslint": "^5.13.0",
-      "eslint-plugin-react-hooks": "1.0.1",
-      "jsdom": "^13.2.0",
+      "enzyme": "^3.9.0",
+      "enzyme-adapter-react-16": "^1.11.2",
+      "eslint": "^5.15.3",
+      "eslint-plugin-react-hooks": "1.6.0",
+      "jsdom": "^14.0.0",
       "jsdom-global": "^3.0.2",
-      "mocha": "^5.2.0",
-      "prop-types": "^15.7.1",
-      "sinon": "^7.2.3"
+      "mocha": "^6.0.2",
+      "prop-types": "^15.7.2",
+      "sinon": "^7.3.1"
    },
    "dependencies": {
       "immutability-helper": "^3.0.0",
       "lodash": "^4.17.11",
-      "react": "^16.8.1",
-      "react-dom": "^16.8.1"
+      "react": "^16.8.6",
+      "react-dom": "^16.8.6"
    },
    "babel": {
       "presets": [
