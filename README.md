@@ -27,7 +27,7 @@ Draft then works as a [render prop](https://reactjs.org/docs/render-props.html) 
                }) => (
                   <FormEditor
                      state={state}
-                     onChange={onChange}
+                     onChange={set}
                      checkForChanges={check}
                   />
                )
