@@ -1,5 +1,5 @@
 {
-   "name": "react-draft",
+   "name": "@lostclawz/react-draft",
    "version": "1.4.1",
    "description": "a draft state management facc component for react",
    "main": "src/Draft.jsx",
